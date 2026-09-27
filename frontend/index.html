@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>VisionAge AI | Age & Gender Recognition</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --bg: #080b12;
+        --card: #10151f;
+        --card-light: #151c28;
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #f4f7fb;
+        --muted: #8d98a8;
+        --accent: #6c63ff;
+        --accent-2: #8b85ff;
+        --success: #38d39f;
+        --danger: #ff5d73;
+    }
+
+    body {
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+            radial-gradient(
+                circle at 20% 10%,
+                rgba(108, 99, 255, 0.15),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 90% 80%,
+                rgba(56, 211, 159, 0.08),
+                transparent 30%
+            ),
+            var(--bg);
+        color: var(--text);
+    }
+
+    /* ================= NAVBAR ================= */
+
+    .navbar {
+        height: 70px;
+        border-bottom: 1px solid var(--border);
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 0 6%;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-icon {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 10px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: linear-gradient(
+            135deg,
+            var(--accent),
+            var(--accent-2)
+        );
+
+        font-size: 19px;
+    }
+
+    .brand-name {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .brand-name span {
+        color: var(--accent-2);
+    }
+
+    .nav-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 10px rgba(56, 211, 159, 0.7);
+    }
+
+    /* ================= MAIN ================= */
+
+    .main {
+        width: 88%;
+        max-width: 1250px;
+
+        margin: 40px auto 60px;
+    }
+
+    .hero {
+        margin-bottom: 30px;
+    }
+
+    .hero h1 {
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.1;
+
+        margin-bottom: 12px;
+    }
+
+    .hero h1 span {
+        color: var(--accent-2);
+    }
+
+    .hero p {
+        max-width: 720px;
+
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 15px;
+    }
+
+    /* ================= DASHBOARD ================= */
+
+    .dashboard {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.8fr);
+        gap: 22px;
+    }
+
+    .card {
+        background: rgba(16, 21, 31, 0.88);
+        border: 1px solid var(--border);
+
+        border-radius: 18px;
+
+        box-shadow:
+            0 20px 50px rgba(0, 0, 0, 0.25);
+
+        backdrop-filter: blur(12px);
+    }
+
+    /* ================= CAMERA ================= */
+
+    .camera-card {
+        padding: 18px;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 15px;
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .live-badge {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+
+        padding: 6px 10px;
+
+        border-radius: 20px;
+
+        background: rgba(56, 211, 159, 0.08);
+        color: var(--success);
+
+        font-size: 12px;
+    }
+
+    .live-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--success);
+    }
+
+    .video-wrapper {
+        position: relative;
+
+        width: 100%;
+        aspect-ratio: 16 / 10;
+
+        overflow: hidden;
+
+        border-radius: 14px;
+
+        background: #05070b;
+        border: 1px solid var(--border);
+    }
+
+    video {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+        display: block;
+    }
+
+    .camera-overlay {
+        position: absolute;
+        inset: 0;
+
+        pointer-events: none;
+    }
+
+    .corner {
+        position: absolute;
+
+        width: 35px;
+        height: 35px;
+
+        border-color: rgba(255, 255, 255, 0.7);
+    }
+
+    .corner.tl {
+        top: 15px;
+        left: 15px;
+
+        border-top: 2px solid;
+        border-left: 2px solid;
+    }
+
+    .corner.tr {
+        top: 15px;
+        right: 15px;
+
+        border-top: 2px solid;
+        border-right: 2px solid;
+    }
+
+    .corner.bl {
+        bottom: 15px;
+        left: 15px;
+
+        border-bottom: 2px solid;
+        border-left: 2px solid;
+    }
+
+    .corner.br {
+        bottom: 15px;
+        right: 15px;
+
+        border-bottom: 2px solid;
+        border-right: 2px solid;
+    }
+
+    .camera-message {
+        position: absolute;
+        inset: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-direction: column;
+        gap: 10px;
+
+        color: var(--muted);
+        background: rgba(5, 7, 11, 0.65);
+    }
+
+    .camera-icon {
+        font-size: 35px;
+    }
+
+    /* ================= CONTROLS ================= */
+
+    .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin-top: 15px;
+        gap: 15px;
+    }
+
+    .primary-btn {
+        border: none;
+
+        padding: 11px 20px;
+
+        border-radius: 9px;
+
+        background: linear-gradient(
+            135deg,
+            var(--accent),
+            var(--accent-2)
+        );
+
+        color: white;
+
+        font-weight: 600;
+        cursor: pointer;
+
+        transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .primary-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .primary-btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+    }
+    #startBtn,
+#stopBtn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#startBtn:hover,
+#stopBtn:hover {
+    opacity: 0.9;
+}
+
+#startBtn:disabled,
+#stopBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+    .status-text {
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    /* ================= RESULTS ================= */
+
+    .results-card {
+        padding: 22px;
+    }
+
+    .results-header {
+        margin-bottom: 20px;
+    }
+
+    .results-header h2 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .results-header p {
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .result-item {
+        padding: 17px;
+
+        background: var(--card-light);
+
+        border: 1px solid var(--border);
+
+        border-radius: 13px;
+
+        margin-bottom: 12px;
+    }
+
+    .result-label {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .result-value {
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .confidence-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 9px;
+    }
+
+    .confidence-value {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .progress {
+        height: 7px;
+
+        background: #252d3a;
+
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+
+        background: linear-gradient(
+            90deg,
+            var(--accent),
+            var(--success)
+        );
+
+        border-radius: 10px;
+
+        transition: width 0.5s ease;
+    }
+
+    /* ================= INFO ================= */
+
+    .info-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+
+        margin-top: 22px;
+    }
+
+    .info-card {
+        padding: 22px;
+    }
+
+    .info-card h3 {
+        margin-bottom: 10px;
+        font-size: 17px;
+    }
+
+    .info-card p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .feature-list {
+        list-style: none;
+        margin-top: 12px;
+    }
+
+    .feature-list li {
+        color: var(--muted);
+        font-size: 13px;
+
+        padding: 7px 0;
+    }
+
+    .feature-list li::before {
+        content: "✓";
+        color: var(--success);
+        margin-right: 8px;
+    }
+
+    /* ================= FOOTER ================= */
+
+    footer {
+        text-align: center;
+
+        margin-top: 40px;
+
+        color: #667181;
+        font-size: 12px;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 850px) {
+
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+
+        .info-section {
+            grid-template-columns: 1fr;
+        }
+
+        .navbar {
+            padding: 0 5%;
+        }
+
+        .main {
+            width: 92%;
+        }
+    }
+
+    @media (max-width: 500px) {
+
+        .nav-status {
+            display: none;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+        }
+
+        .controls {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .primary-btn {
+            width: 100%;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            ◉
+        </div>
+
+        <div class="brand-name">
+            Vision<span>Age</span> AI
+        </div>
+
+    </div>
+
+    <div class="nav-status">
+
+        <div class="status-dot"></div>
+
+        AI Engine Ready
+
+    </div>
+
+</nav>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h1>
+            Real-time
+            <span>Age & Gender</span>
+            Recognition
+        </h1>
+
+        <p>
+            VisionAge AI is a computer vision application that
+            analyzes webcam frames using deep learning to estimate
+            a person's age and gender in real time.
+        </p>
+
+    </section>
+
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <section class="dashboard">
+
+
+        <!-- CAMERA -->
+
+        <div class="card camera-card">
+
+            <div class="card-header">
+
+                <div class="card-title">
+                    Live Camera
+                </div>
+
+                <div class="live-badge">
+
+                    <div class="dot"></div>
+
+                    LIVE
+
+                </div>
+
+            </div>
+
+
+            <div class="video-wrapper">
+
+                <video
+                    id="video"
+                    autoplay
+                    playsinline>
+                </video>
+
+                <div
+                    id="cameraMessage"
+                    class="camera-message">
+
+                    <div class="camera-icon">
+                        ◉
+                    </div>
+
+                    <div>
+                        Camera is not active
+                    </div>
+
+                </div>
+
+
+                <div class="camera-overlay">
+
+                    <div class="corner tl"></div>
+                    <div class="corner tr"></div>
+                    <div class="corner bl"></div>
+                    <div class="corner br"></div>
+
+                </div>
+
+            </div>
+
+
+            <canvas id="canvas" style=display:none;></canvas>
+
+
+            <div class="controls">
+
+                <div class="primary-bts">
+                    <button id="startBtn">Start Camera</button>
+                    <button id="stopBtn" disabled>Stop Camera</button>
+                </div>
+
+                <div
+                    id="status"
+                    class="status-text">
+
+                    Ready to start detection
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESULTS -->
+
+        <div class="card results-card">
+
+            <div class="results-header">
+
+                <h2>
+                    Detection Results
+                </h2>
+
+                <p>
+                    Latest model prediction
+                </p>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <div class="result-label">
+                    Estimated Age
+                </div>
+
+                <div
+                    id="age"
+                    class="result-value">
+
+                    --
+
+                </div>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <div class="result-label">
+                    Detected Gender
+                </div>
+
+                <div
+                    id="gender"
+                    class="result-value">
+
+                    --
+
+                </div>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <div class="confidence-header">
+
+                    <div class="result-label">
+                        Inference Confidence
+                    </div>
+
+                    <div
+                        id="confidence"
+                        class="confidence-value">
+
+                        --
+
+                    </div>
+
+                </div>
+
+                <div class="progress">
+
+                    <div
+                        id="confidenceBar"
+                        class="progress-bar">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= INFORMATION ================= -->
+
+    <section class="info-section">
+
+
+        <div class="card info-card">
+
+            <h3>
+                About VisionAge AI
+            </h3>
+
+            <p>
+                This project demonstrates an end-to-end
+                computer vision pipeline using a web interface,
+                FastAPI backend and trained Keras deep learning
+                models.
+            </p>
+
+            <ul class="feature-list">
+
+                <li>
+                    Real-time webcam processing
+                </li>
+
+                <li>
+                    Deep learning based prediction
+                </li>
+
+                <li>
+                    FastAPI inference API
+                </li>
+
+                <li>
+                    Lightweight browser interface
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div class="card info-card">
+
+            <h3>
+                How it works
+            </h3>
+
+            <p>
+                The webcam captures frames periodically.
+                Each frame is sent to the FastAPI backend,
+                where it is preprocessed and passed through
+                the trained age and gender recognition models.
+            </p>
+
+            <ul class="feature-list">
+
+                <li>
+                    Webcam captures a frame
+                </li>
+
+                <li>
+                    FastAPI receives the image
+                </li>
+
+                <li>
+                    Keras models perform inference
+                </li>
+
+                <li>
+                    Prediction is returned as JSON
+                </li>
+
+            </ul>
+
+        </div>
+
+
+    </section>
+
+
+    <footer>
+
+        VisionAge AI · Computer Vision Demo
+
+        <br>
+
+        Predictions are estimates and should not be
+        treated as personally identifying information.
+
+    </footer>
+
+</main>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    const video =
+        document.getElementById("video");
+
+    const canvas =
+        document.getElementById("canvas");
+
+    const startBtn =
+        document.getElementById("startBtn");
+
+    const ageElement =
+        document.getElementById("age");
+
+    const genderElement =
+        document.getElementById("gender");
+
+    const confidenceElement =
+        document.getElementById("confidence");
+
+    const confidenceBar =
+        document.getElementById("confidenceBar");
+
+    const statusElement =
+        document.getElementById("status");
+
+    const cameraMessage =
+        document.getElementById("cameraMessage");
+
+
+    /*
+        Because FastAPI serves this HTML,
+        use the relative API path.
+    */
+
+    const API_URL = "/predict";
+
+
+    /*
+        Prediction interval.
+
+        One prediction every 1 second.
+    */
+
+    const PREDICTION_INTERVAL = 1000;
+
+
+    let predictionTimer = null;
+
+const stopBtn = document.getElementById("stopBtn");
+
+let cameraStream = null;
+
+/*
+    Start webcam
+*/
+
+    async function startCamera() {
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false
+            });
+
+            video.srcObject = cameraStream;
+
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+
+            cameraMessage.style.display = "none";
+            statusElement.textContent = "Camera active · Detecting...";
+
+            predictionTimer = setInterval(
+                captureAndPredict,
+                PREDICTION_INTERVAL
+            );
+
+            // First prediction immediately
+            captureAndPredict();
+
+        } catch (error) {
+            console.error("Camera error:", error);
+
+            statusElement.textContent = "Camera access failed";
+
+            alert(
+                "Unable to access the camera. Please allow camera permission."
+            );
+        }
+    }
+
+
+    /*
+        Stop webcam
+    */
+
+    function stopCamera() {
+
+        // Stop prediction timer
+        if (predictionTimer) {
+            clearInterval(predictionTimer);
+            predictionTimer = null;
+        }
+
+        // Stop camera stream
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+
+        // Remove video stream
+        video.srcObject = null;
+
+        // Reset buttons
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+
+        statusElement.textContent = "Camera stopped";
+    }
+
+
+    /*
+        Stop button
+    */
+
+    stopBtn.addEventListener("click", stopCamera);
+
+    /*
+        Capture webcam frame
+    */
+
+    async function captureAndPredict() {
+
+        if (
+            video.readyState !==
+            video.HAVE_ENOUGH_DATA
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+            Set canvas dimensions
+        */
+
+        canvas.width =
+            video.videoWidth;
+
+        canvas.height =
+            video.videoHeight;
+
+
+        const context =
+            canvas.getContext("2d");
+
+
+        /*
+            Copy webcam frame
+        */
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        /*
+            Convert frame to JPEG
+        */
+
+        canvas.toBlob(
+            async function(blob) {
+
+                if (!blob) {
+                    return;
+                }
+
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "file",
+                    blob,
+                    "webcam.jpg"
+                );
+
+
+                try {
+
+                    /*
+                        Send frame to FastAPI
+                    */
+
+                    const response =
+                        await fetch(
+                            API_URL,
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Prediction request failed: " +
+                            response.status
+                        );
+
+                    }
+
+
+                    /*
+                        Read JSON
+                    */
+
+                    const result =
+                        await response.json();
+
+
+                    console.log(
+                        "Prediction:",
+                        result
+                    );
+
+
+                    /*
+                        Update age
+                    */
+
+                    ageElement.textContent =
+                        result.age;
+
+
+                    /*
+                        Update gender
+                    */
+
+                    genderElement.textContent =
+                        result.gender;
+
+
+                    /*
+                        Update confidence
+                    */
+
+                    const confidence =Number(result.confidence )* 100;
+
+
+                    confidenceElement.textContent =
+                        confidence.toFixed(1) + "%";
+
+
+                    /*
+                        Update progress bar
+                    */
+
+                    confidenceBar.style.width = confidence + "%";
+
+
+                    statusElement.textContent =
+                        "Detection active";
+
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Prediction error:",
+                        error
+                    );
+
+
+                    statusElement.textContent =
+                        "Prediction failed";
+
+                }
+
+            },
+
+            "image/jpeg",
+
+            0.8
+        );
+
+    }
+
+
+    /*
+        Start button
+    */
+
+    startBtn.addEventListener(
+        "click",
+        startCamera
+    );
+
+</script>
+
+</body>
+
+</html>
