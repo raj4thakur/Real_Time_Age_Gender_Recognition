@@ -50,6 +50,9 @@ The application provides a dashboard where the user can:
 7. Display the predicted gender.
 8. Display the gender confidence score.
 
+
+
+Link to try: https://real-time-age-gender-recognition.onrender.com/
 Example prediction:
 
 ```text
