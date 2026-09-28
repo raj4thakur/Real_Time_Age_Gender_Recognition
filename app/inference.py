@@ -8,19 +8,16 @@ BASE_DIR =Path(__file__).resolve().parent.parent
 
 MODELS_DIR = BASE_DIR / "models"
 
-# AGE_MODEL_PATH = MODELS_DIR / "Age_model.keras"
-# GENDER_MODEL_PATH = MODELS_DIR / "Gender_model.keras"
-
-import tensorflow as tf
-
-AGE_MODEL_PATH = MODELS_DIR / "age_saved_model"
-GENDER_MODEL_PATH = MODELS_DIR / "gender_saved_model"
+AGE_MODEL_PATH = MODELS_DIR / "Age_model.h5"
+GENDER_MODEL_PATH = MODELS_DIR / "Gender_model.h5"
 
 print("Loading age model...")
-age_model = tf.saved_model.load(AGE_MODEL_PATH)
+age_model = load_model(AGE_MODEL_PATH, compile=False)
 
 print("Loading gender model...")
-gender_model = tf.saved_model.load(GENDER_MODEL_PATH)
+gender_model = load_model(GENDER_MODEL_PATH, compile=False)
+
+print("Models loaded successfully.")
 
 gender_dict = {
     0: "Male",
